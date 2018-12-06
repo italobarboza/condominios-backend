@@ -6,6 +6,7 @@ use Validator;
 use App\User;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Firebase\JWT\ExpiredException;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Lumen\Routing\Controller as BaseController;
@@ -35,10 +36,10 @@ class AuthController extends BaseController
      */
     protected function jwt(User $user) {
         $payload = [
-            'iss' => "lumen-jwt", // Issuer of the token
+            'iss' => "comdominios-back", // Issuer of the token
             'sub' => $user->id, // Subject of the token
-            'iat' => time(), // Time when JWT was issued. 
-            'exp' => time() + 60*60 // Expiration time
+            'iat' => time(), // Time when JWT was issued. (now)
+            'exp' => time() + 60*60 // Expiration time (1hr)
         ];
         
         // As you can see we are passing `JWT_SECRET` as the second parameter that will 
@@ -64,18 +65,23 @@ class AuthController extends BaseController
             // differents kind of responses. But let's return the 
             // below respose for now.
             return response()->json([
-                'error' => 'Email does not exist.'
-            ], 400);
+                'error' => 'These credentials do not match our records.'
+            ], Response::HTTP_NOT_FOUND);
         }
         // Verify the password and generate the token
         if (Hash::check($this->request->input('password'), $user->password)) {
             return response()->json([
                 'token' => $this->jwt($user)
-            ], 200);
+            ], Response::HTTP_OK);
+        } else {
+            //password don't match
+            return response()->json([
+                'error' => 'These credentials do not match our records.'
+            ], Response::HTTP_NOT_FOUND);    
         }
         // Bad Request response
         return response()->json([
-            'error' => 'Email or password is wrong.'
-        ], 400);
+            'error' => 'There is something wrong going on here.'
+        ], Response::HTTP_NOT_FOUND);
     }
 }
