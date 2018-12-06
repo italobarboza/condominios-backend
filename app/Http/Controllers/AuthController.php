@@ -65,7 +65,7 @@ class AuthController extends BaseController
             // differents kind of responses. But let's return the 
             // below respose for now.
             return response()->json([
-                'error' => 'User not found.'
+                'error' => 'These credentials do not match our records.'
             ], Response::HTTP_NOT_FOUND);
         }
         // Verify the password and generate the token
@@ -73,10 +73,15 @@ class AuthController extends BaseController
             return response()->json([
                 'token' => $this->jwt($user)
             ], Response::HTTP_OK);
+        } else {
+            //password don't match
+            return response()->json([
+                'error' => 'These credentials do not match our records.'
+            ], Response::HTTP_NOT_FOUND);    
         }
         // Bad Request response
         return response()->json([
-            'error' => 'User\'s e-mail or password is invalid.'
+            'error' => 'There is something wrong going on here.'
         ], Response::HTTP_NOT_FOUND);
     }
 }
