@@ -18,8 +18,6 @@ $router->get('/', function () use ($router) {
 $router->post('auth/login', ['uses' => 'AuthController@authenticate']);
 
 $router->group(['middleware' => 'jwt.auth'], function() use ($router) {
-    $router->get('users', function() {
-        $users = \App\User::all();
-        return response()->json($users);
-    });
+    $router->get('user/{id}', ['uses' => 'UserController@show']);
+    $router->post('user/new', ['uses' => 'UserController@create']);
 });
