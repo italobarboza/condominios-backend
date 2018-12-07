@@ -65,23 +65,31 @@ class AuthController extends BaseController
             // differents kind of responses. But let's return the 
             // below respose for now.
             return response()->json([
-                'error' => 'These credentials do not match our records.'
-            ], Response::HTTP_NOT_FOUND);
+                'success' => false,
+                'data' => '',
+                'message' => 'These credentials do not match our records.'
+            ], Response::HTTP_BAD_REQUEST);
         }
         // Verify the password and generate the token
         if (Hash::check($this->request->input('password'), $user->password)) {
             return response()->json([
-                'token' => $this->jwt($user)
+                'success' => true,
+                'data' => ['token' => $this->jwt($user)],
+                'message' => 'User authenticated successfully.'
             ], Response::HTTP_OK);
         } else {
             //password don't match
             return response()->json([
-                'error' => 'These credentials do not match our records.'
-            ], Response::HTTP_NOT_FOUND);    
+                'success' => false,
+                'data' => '',
+                'message' => 'These credentials do not match our records.',
+            ], Response::HTTP_BAD_REQUEST);
         }
         // Bad Request response
         return response()->json([
-            'error' => 'There is something wrong going on here.'
-        ], Response::HTTP_NOT_FOUND);
+            'success' => false,
+            'data' => '',
+            'message' => 'There is something wrong going on here.'
+        ], Response::HTTP_BAD_REQUEST);
     }
 }
